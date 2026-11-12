@@ -1,0 +1,27 @@
+---
+import { SITE_URL } from '../data/business';
+interface Props {
+  items: { t: string; h: string }[];
+}
+const { items } = Astro.props;
+const todos = [{ t: 'Inicio', h: '/' }, ...items];
+const schema = {
+  '@context': 'https://schema.org',
+  '@type': 'BreadcrumbList',
+  itemListElement: todos.map((i, n) => ({
+    '@type': 'ListItem',
+    position: n + 1,
+    name: i.t,
+    item: `${SITE_URL}${i.h === '/' ? '/' : i.h}`,
+  })),
+};
+---
+
+<nav class="migas" aria-label="Ruta">
+  <ol>
+    {todos.map((i, n) => (
+      <li>{n === todos.length - 1 ? <span aria-current="page">{i.t}</span> : <a href={i.h}>{i.t}</a>}</li>
+    ))}
+  </ol>
+</nav>
+<script type="application/ld+json" set:html={JSON.stringify(schema)} />

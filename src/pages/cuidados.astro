@@ -1,0 +1,189 @@
+---
+import Base from '../layouts/Base.astro';
+import Migas from '../components/Migas.astro';
+import Cierre from '../components/Cierre.astro';
+import { cuidadosCejas } from '../data/contenido';
+import { servicios } from '../data/servicios';
+
+const cejas = servicios.find((s) => s.slug === 'microblading')!;
+const labios = servicios.find((s) => s.slug === 'micropigmentacion-de-labios')!;
+const ojos = servicios.find((s) => s.slug === 'delineado-permanente')!;
+
+const schema = {
+  '@context': 'https://schema.org',
+  '@type': 'HowTo',
+  name: 'Cuidados después del microblading y la micropigmentación de cejas',
+  step: [...cuidadosCejas.si, ...cuidadosCejas.no].map((t, i) => ({
+    '@type': 'HowToStep',
+    position: i + 1,
+    text: t,
+  })),
+};
+---
+
+<Base
+  titulo="Cuidados después del microblading | Ivy Brow & Skin"
+  descripcion="Qué hacer y qué evitar después del microblading, el delineado permanente y la micropigmentación de labios. Cicatrización día por día y cuándo es el retoque."
+  ruta="/cuidados"
+  schema={schema}
+>
+  <header class="cabecera">
+    <div class="contenedor">
+      <Migas items={[{ t: 'Cuidados', h: '/cuidados' }]} />
+      <h1>Cuidados después de tu cita</h1>
+      <p class="bajada">
+        Cómo cicatriza la piel y cómo la cuidas en casa decide cuánto pigmento se queda. Esta guía resume lo que te
+        explicamos en la cita. Si algo no coincide con tus indicaciones por escrito, sigue las que te dimos.
+      </p>
+    </div>
+  </header>
+
+  <section class="seccion" aria-labelledby="cejas">
+    <div class="contenedor">
+      <h2 id="cejas">Cejas: microblading, microshading y combinadas</h2>
+      <div class="sino">
+        <div>
+          <h3>Sí</h3>
+          <ul class="hojas">{cuidadosCejas.si.map((c) => <li>{c}</li>)}</ul>
+        </div>
+        <div>
+          <h3>No</h3>
+          <ul class="no">{cuidadosCejas.no.map((c) => <li>{c}</li>)}</ul>
+        </div>
+      </div>
+      <h3 class="sub">Cómo cicatriza</h3>
+      <dl class="tiempo">
+        {cejas.cicatrizacion!.map((c) => (
+          <div>
+            <dt>{c.cuando}</dt>
+            <dd>{c.que}</dd>
+          </div>
+        ))}
+      </dl>
+    </div>
+  </section>
+
+  <section class="seccion seccion--alt" aria-labelledby="labios">
+    <div class="contenedor">
+      <h2 id="labios">Labios</h2>
+      <ul class="hojas lectura">
+        <li>Bebe con popote los primeros días y evita comidas muy picantes, saladas o calientes.</li>
+        <li>Aplica la pomada indicada para que el labio no se reseque ni se agriete.</li>
+        <li>No uses labial ni brillos hasta que termine la descamación.</li>
+        <li>No te expongas al sol sin protección labial durante un mes.</li>
+      </ul>
+      <h3 class="sub">Cómo cicatriza</h3>
+      <dl class="tiempo">
+        {labios.cicatrizacion!.map((c) => (
+          <div>
+            <dt>{c.cuando}</dt>
+            <dd>{c.que}</dd>
+          </div>
+        ))}
+      </dl>
+    </div>
+  </section>
+
+  <section class="seccion" aria-labelledby="ojos">
+    <div class="contenedor">
+      <h2 id="ojos">Delineado permanente</h2>
+      <ul class="hojas lectura">
+        <li>No uses lentes de contacto ni maquillaje en los ojos durante una semana.</li>
+        <li>No talles los párpados. Si hay inflamación, compresas frías, sin presionar.</li>
+        <li>Evita alberca, sauna y vapor durante 10 días.</li>
+      </ul>
+      <h3 class="sub">Cómo cicatriza</h3>
+      <dl class="tiempo">
+        {ojos.cicatrizacion!.map((c) => (
+          <div>
+            <dt>{c.cuando}</dt>
+            <dd>{c.que}</dd>
+          </div>
+        ))}
+      </dl>
+    </div>
+  </section>
+
+  <section class="seccion seccion--alt" aria-labelledby="alerta">
+    <div class="contenedor lectura">
+      <h2 id="alerta">Cuándo escribirnos de inmediato</h2>
+      <p>
+        Un poco de enrojecimiento e inflamación los primeros días es normal. Escríbenos por WhatsApp si notas calor que
+        aumenta en lugar de bajar, pus, dolor que crece después del segundo día o fiebre. En esos casos también acude con
+        un médico.
+      </p>
+    </div>
+  </section>
+
+  <Cierre titulo="¿Dudas durante tu cicatrización?" texto="Mándanos una foto por WhatsApp y te decimos si todo va bien." ubicacion="cierre_cuidados" />
+</Base>
+
+<style>
+  .sino {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2rem 4rem;
+    margin-top: 1.5rem;
+  }
+  .sino h3 {
+    font-family: var(--display);
+    font-size: var(--t-3);
+    font-style: italic;
+    font-weight: 400;
+    color: var(--vino);
+  }
+  .no {
+    list-style: none;
+    padding: 0;
+  }
+  .no li {
+    position: relative;
+    padding-left: 1.6rem;
+    margin-bottom: 0.55rem;
+  }
+  .no li::before,
+  .no li::after {
+    content: '';
+    position: absolute;
+    left: 0.15rem;
+    top: 0.75em;
+    width: 0.65rem;
+    height: 1.5px;
+    background: var(--cobre);
+    transform: rotate(45deg);
+  }
+  .no li::after {
+    transform: rotate(-45deg);
+  }
+  .sub {
+    margin-top: 2.5rem;
+  }
+  .tiempo {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(13rem, 1fr));
+    gap: 0;
+    margin: 1rem 0 0;
+    border-top: 1px solid var(--linea-fuerte);
+  }
+  .tiempo > div {
+    padding: 1rem 1.5rem 1rem 0;
+  }
+  .tiempo dt {
+    font-family: var(--display);
+    font-size: 1.35rem;
+    color: var(--vino);
+  }
+  .tiempo dd {
+    margin: 0.35rem 0 0;
+    color: var(--suave);
+    font-size: 1rem;
+  }
+  @media (max-width: 47.99rem) {
+    .sino {
+      grid-template-columns: 1fr;
+    }
+    .tiempo > div {
+      border-bottom: 1px solid var(--linea);
+    }
+  }
+</style>

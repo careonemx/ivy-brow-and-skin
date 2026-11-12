@@ -1,0 +1,122 @@
+---
+import Base from '../layouts/Base.astro';
+import Migas from '../components/Migas.astro';
+import Ico from '../components/Ico.astro';
+import Cierre from '../components/Cierre.astro';
+import { business, SITE_URL } from '../data/business';
+
+const schema = {
+  '@context': 'https://schema.org',
+  '@type': 'ProfilePage',
+  mainEntity: {
+    '@type': 'Person',
+    name: business.especialista,
+    jobTitle: business.especialidad,
+    worksFor: { '@id': `${SITE_URL}/#negocio` },
+    sameAs: [business.instagram],
+  },
+};
+---
+
+<Base
+  titulo={`${business.especialista}, especialista en cejas | Ivy Brow & Skin`}
+  descripcion={`Conoce a ${business.especialista}, especialista en cejas, ojos, labios y skincare en la Ciudad de México. Cómo trabaja y qué puedes esperar de tu cita.`}
+  ruta="/sobre-iveet"
+  schema={schema}
+>
+  <header class="cabecera">
+    <div class="contenedor">
+      <Migas items={[{ t: 'Sobre Iveet', h: '/sobre-iveet' }]} />
+      <h1 class="nombre">{business.especialista}</h1>
+      <p class="bajada">{business.especialidad}, en la Ciudad de México.</p>
+    </div>
+  </header>
+
+  <section class="seccion">
+    <div class="contenedor rejilla">
+      <div class="lectura texto">
+        <h2>Una sola persona, de principio a fin</h2>
+        <p>
+          En Ivy Brow &amp; Skin no hay cadena de cabinas ni rotación de técnicas. Iveet hace la valoración, el diseño, el
+          procedimiento y el retoque. Así quien decidió la forma de tu ceja es la misma persona que revisa cómo cicatrizó.
+        </p>
+        <h2>Cómo trabaja</h2>
+        <ul class="hojas">
+          <li>Mide la forma sobre tu rostro, no la copia de una plantilla.</li>
+          <li>No pigmenta hasta que tú apruebas la forma y el tono frente al espejo.</li>
+          <li>Prefiere un resultado discreto que se pueda reforzar en el retoque a uno exagerado que no se puede quitar.</li>
+          <li>Si tu piel no está en buen momento, te lo dice y pospone la cita.</li>
+        </ul>
+        <h2>Realzamos tu belleza natural</h2>
+        <p>
+          El lema de la marca resume el criterio: que la gente note que te ves bien, no que te hiciste algo en las cejas.
+        </p>
+      </div>
+
+      <aside class="lado">
+        {
+          business.formacion.length > 0 && (
+            <div class="bloque">
+              <h2 class="lado__tit">Formación</h2>
+              <ul class="hojas">
+                {business.formacion.map((f) => (
+                  <li>
+                    {f.titulo}, {f.institucion}
+                    {f.anio ? ` (${f.anio})` : ''}
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )
+        }
+        <div class="bloque">
+          <h2 class="lado__tit">Su trabajo</h2>
+          <p>Los resultados reales, sanados y recién hechos, se publican en Instagram.</p>
+          <a class="btn btn--borde" href={business.instagram} target="_blank" rel="noopener" data-ubicacion="sobre_iveet">
+            <Ico n="instagram" /> {business.instagramUsuario}
+          </a>
+        </div>
+      </aside>
+    </div>
+  </section>
+
+  <Cierre />
+</Base>
+
+<style>
+  .nombre {
+    font-style: italic;
+    font-weight: 400;
+  }
+  .rejilla {
+    display: grid;
+    grid-template-columns: minmax(0, 2fr) minmax(0, 1fr);
+    gap: 3rem 5rem;
+  }
+  .texto h2 {
+    font-size: var(--t-3);
+    margin-top: 2.5rem;
+  }
+  .texto h2:first-child {
+    margin-top: 0;
+  }
+  .bloque {
+    padding-top: 1.25rem;
+    border-top: 1px solid var(--linea-fuerte);
+    margin-bottom: 2rem;
+  }
+  .lado__tit {
+    font-family: var(--texto);
+    font-size: 1rem;
+    font-weight: 500;
+    color: var(--salvia-texto);
+  }
+  .bloque p {
+    color: var(--suave);
+  }
+  @media (max-width: 55rem) {
+    .rejilla {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

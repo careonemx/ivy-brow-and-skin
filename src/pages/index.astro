@@ -1,0 +1,440 @@
+---
+import Base from '../layouts/Base.astro';
+import Ceja from '../components/Ceja.astro';
+import Ico from '../components/Ico.astro';
+import Preguntas from '../components/Preguntas.astro';
+import Cierre from '../components/Cierre.astro';
+import { business, waLink, SITE_URL } from '../data/business';
+import { categorias, porCategoria, precioTexto } from '../data/servicios';
+import { faqGeneral } from '../data/contenido';
+
+const faqPortada = faqGeneral.slice(0, 6);
+const faqSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'FAQPage',
+  mainEntity: faqPortada.map((f) => ({
+    '@type': 'Question',
+    name: f.p,
+    acceptedAnswer: { '@type': 'Answer', text: f.r },
+  })),
+};
+const web = {
+  '@context': 'https://schema.org',
+  '@type': 'WebSite',
+  name: business.nombre,
+  url: `${SITE_URL}/`,
+  inLanguage: 'es-MX',
+};
+---
+
+<Base
+  titulo="Microblading y micropigmentación en CDMX | Ivy Brow & Skin"
+  descripcion="Microblading, microshading, delineado y labios en Ciudad de México. Diseño medido sobre tu rostro y aprobado por ti antes de empezar. Agenda por WhatsApp."
+  ruta="/"
+  schema={[faqSchema, web]}
+>
+  <section class="hero">
+    <div class="contenedor hero__rejilla">
+      <div class="hero__texto">
+        <h1>
+          <span class="hero__display">Cejas que parecen tuyas.</span>
+          <span class="hero__sub">Microblading y micropigmentación en la Ciudad de México</span>
+        </h1>
+        <p class="hero__bajada">
+          La forma se mide sobre tu rostro y no se empieza hasta que tú la apruebas en el espejo. El resultado:
+          cejas, ojos y labios que se ven naturales de cerca.
+        </p>
+        <div class="acciones">
+          <a class="btn btn--lleno" href={waLink()} target="_blank" rel="noopener" data-ubicacion="hero">
+            <Ico n="whatsapp" /> Escribir por WhatsApp
+          </a>
+          <a class="btn btn--borde" href={business.agendaUrl} target="_blank" rel="noopener" data-ubicacion="hero">
+            <Ico n="agenda" /> Elegir día y hora
+          </a>
+        </div>
+        <p class="hero__nota">Atención solo con cita, con {business.especialista}.</p>
+      </div>
+      <div class="hero__dibujo">
+        <Ceja />
+      </div>
+    </div>
+  </section>
+
+  <section class="seccion seccion--alt" aria-labelledby="serv-tit">
+    <div class="contenedor">
+      <div class="intro">
+        <h2 id="serv-tit">Servicios</h2>
+        <p>Micropigmentación para cejas, ojos y labios, y tratamientos de piel sin procedimientos agresivos.</p>
+      </div>
+
+      <div class="cats">
+        {categorias.map((c) => (
+          <div class="cat">
+            <div class="cat__cab">
+              <h3 class="cat__nombre">{c.nombre}</h3>
+              <p>{c.frase}</p>
+            </div>
+            <ul class="cat__lista">
+              {porCategoria(c.nombre).map((s) => (
+                <li>
+                  <a href={`/servicios/${s.slug}`} class="serv">
+                    <span class="serv__nombre">{s.nombre}</span>
+                    <span class="serv__res">{s.resumen}</span>
+                    <span class="serv__precio">{precioTexto(s.precio)}</span>
+                  </a>
+                </li>
+              ))}
+            </ul>
+          </div>
+        ))}
+      </div>
+      <p class="mas"><a href="/servicios">Comparar todos los servicios, con duración y qué incluyen</a></p>
+    </div>
+  </section>
+
+  <section class="seccion" aria-labelledby="cita-tit">
+    <div class="contenedor dos">
+      <div class="intro">
+        <h2 id="cita-tit">Cómo es tu cita de micropigmentación</h2>
+        <p>Nada se pigmenta hasta que la forma y el tono te convencen. Si en la valoración vemos que no es buen momento para tu piel, te lo decimos.</p>
+      </div>
+      <ol class="pasos">
+        <li>
+          <div>
+            <h3>Nos escribes</h3>
+            <p>Por WhatsApp o en la agenda en línea. Si nos mandas una foto de tus cejas sin maquillaje, te orientamos sobre la técnica que mejor te queda.</p>
+          </div>
+        </li>
+        <li>
+          <div>
+            <h3>Diseñamos la forma</h3>
+            <p>Se mide sobre tu rostro el inicio, el arco y el final de la ceja, se dibuja y la ves en el espejo. Se ajusta las veces que haga falta.</p>
+          </div>
+        </li>
+        <li>
+          <div>
+            <h3>Procedimiento</h3>
+            <p>Con anestésico en crema, material estéril y desechable. Te vas con los cuidados por escrito.</p>
+          </div>
+        </li>
+        <li>
+          <div>
+            <h3>Retoque</h3>
+            <p>Entre la cuarta y la octava semana revisamos cómo cicatrizó tu piel y completamos lo que haga falta.</p>
+          </div>
+        </li>
+      </ol>
+    </div>
+  </section>
+
+  <section class="seccion seccion--alt" aria-labelledby="comp-tit">
+    <div class="contenedor">
+      <div class="intro">
+        <h2 id="comp-tit">Microblading, microshading o tatuaje: en qué se diferencian</h2>
+        <p>Las tres técnicas pigmentan la ceja, pero el resultado y su duración cambian bastante.</p>
+      </div>
+      <div class="tabla-envoltura" tabindex="0" role="region" aria-labelledby="comp-tit">
+        <table class="tabla tabla--apilada">
+          <thead>
+            <tr>
+              <td></td>
+              <th scope="col">Microblading</th>
+              <th scope="col">Microshading</th>
+              <th scope="col">Tatuaje tradicional</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <th scope="row">Cómo se hace</th>
+              <td data-et="Microblading">A mano, trazo por trazo</td>
+              <td data-et="Microshading">Con dermógrafo, punto por punto</td>
+              <td data-et="Tatuaje tradicional">Con máquina de tatuar, en bloque</td>
+            </tr>
+            <tr>
+              <th scope="row">Cómo se ve</th>
+              <td data-et="Microblading">Pelos naturales</td>
+              <td data-et="Microshading">Ceja maquillada con polvo</td>
+              <td data-et="Tatuaje tradicional">Color sólido</td>
+            </tr>
+            <tr>
+              <th scope="row">Cuánto dura</th>
+              <td data-et="Microblading">12 a 18 meses</td>
+              <td data-et="Microshading">18 a 30 meses</td>
+              <td data-et="Tatuaje tradicional">Años; no se va por sí solo</td>
+            </tr>
+            <tr>
+              <th scope="row">Con el tiempo</th>
+              <td data-et="Microblading">Se aclara de forma gradual</td>
+              <td data-et="Microshading">Se aclara de forma gradual</td>
+              <td data-et="Tatuaje tradicional">Suele virar a gris o azul</td>
+            </tr>
+            <tr>
+              <th scope="row">Mejor para</th>
+              <td data-et="Microblading">Piel seca o normal</td>
+              <td data-et="Microshading">Piel grasa o mixta</td>
+              <td data-et="Tatuaje tradicional">No lo ofrecemos</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <p class="mas">¿No sabes cuál te conviene? <a href="/servicios/cejas-combinadas">Las cejas combinadas</a> unen las dos primeras.</p>
+    </div>
+  </section>
+
+  <section class="seccion" aria-labelledby="iveet-tit">
+    <div class="contenedor iveet">
+      <h2 id="iveet-tit" class="iveet__nombre">{business.especialista}</h2>
+      <div class="iveet__texto">
+        <p class="iveet__rol">{business.especialidad}</p>
+        <p>
+          Cada cita la atiende Iveet de principio a fin: la valoración, el diseño, el procedimiento y el retoque. Su
+          trabajo parte de una idea sencilla, que también es el lema de la marca: realzar lo que ya tienes, no
+          dibujarte una cara distinta.
+        </p>
+        <div class="acciones">
+          <a class="btn btn--borde" href="/sobre-iveet">Conocer a Iveet</a>
+          <a class="btn btn--borde" href={business.instagram} target="_blank" rel="noopener" data-ubicacion="portada_iveet">
+            <Ico n="instagram" /> Ver trabajos en Instagram
+          </a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  {
+    business.testimonios.length > 0 && (
+      <section class="seccion seccion--alt" aria-labelledby="test-tit">
+        <div class="contenedor">
+          <h2 id="test-tit">Lo que dicen las clientas</h2>
+          <div class="testimonios">
+            {business.testimonios.map((t) => (
+              <blockquote>
+                <p>{t.texto}</p>
+                <footer>
+                  {t.nombre}, {t.servicio}. <cite>{t.fuente}</cite>
+                </footer>
+              </blockquote>
+            ))}
+          </div>
+        </div>
+      </section>
+    )
+  }
+
+  <section class="seccion seccion--alt" aria-labelledby="faq-tit">
+    <div class="contenedor dos">
+      <div class="intro">
+        <h2 id="faq-tit">Preguntas frecuentes</h2>
+        <p>Lo que más nos preguntan antes de la primera cita.</p>
+        <p><a href="/preguntas-frecuentes">Ver todas las preguntas</a></p>
+      </div>
+      <Preguntas items={faqPortada} />
+    </div>
+  </section>
+
+  <Cierre />
+</Base>
+
+<style>
+  .hero {
+    padding-block: clamp(2.5rem, 1.5rem + 4vw, 5.5rem) clamp(3rem, 2rem + 4vw, 6rem);
+    overflow: hidden;
+  }
+  .hero__rejilla {
+    display: grid;
+    grid-template-columns: minmax(0, 5fr) minmax(0, 6fr);
+    gap: clamp(2rem, 1rem + 3vw, 4rem);
+    align-items: center;
+  }
+  .hero h1 {
+    margin-bottom: 1.25rem;
+  }
+  .hero__display {
+    display: block;
+    font-size: clamp(2.9rem, 1.6rem + 5.2vw, 5.6rem);
+    line-height: 1;
+    letter-spacing: -0.025em;
+    font-variation-settings: 'opsz' 96;
+  }
+  .hero__sub {
+    display: block;
+    margin-top: 1.1rem;
+    font-family: var(--texto);
+    font-size: var(--t-2);
+    font-weight: 500;
+    line-height: 1.35;
+    letter-spacing: 0;
+    color: var(--salvia-texto);
+  }
+  .hero__bajada {
+    font-size: var(--t-2);
+    line-height: 1.55;
+    color: var(--suave);
+    max-width: 30rem;
+    margin-bottom: 1.75rem;
+  }
+  .hero__nota {
+    margin-top: 1.25rem;
+    font-size: var(--t-0);
+    color: var(--suave);
+  }
+  .hero__dibujo {
+    padding: clamp(0.5rem, 2vw, 1.5rem);
+  }
+  @media (max-width: 55rem) {
+    .hero__rejilla {
+      grid-template-columns: 1fr;
+    }
+    .hero__dibujo {
+      order: -1;
+      max-width: 34rem;
+      margin-inline: auto;
+      width: 100%;
+      padding: 0;
+    }
+  }
+
+  .cats {
+    display: grid;
+    gap: 0;
+    border-top: 1px solid var(--linea-fuerte);
+  }
+  .cat {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 2fr);
+    gap: 1rem 3rem;
+    padding-block: 2rem;
+    border-bottom: 1px solid var(--linea);
+  }
+  .cat__nombre {
+    font-family: var(--display);
+    font-size: var(--t-4);
+    font-weight: 400;
+    font-style: italic;
+    color: var(--vino);
+    margin-bottom: 0.25rem;
+  }
+  .cat__cab p {
+    color: var(--suave);
+    margin: 0;
+    max-width: 18rem;
+  }
+  .cat__lista {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+  .serv {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 0.15rem 1.5rem;
+    padding: 0.9rem 0;
+    text-decoration: none;
+    color: var(--tinta);
+    border-bottom: 1px solid var(--linea);
+  }
+  .cat__lista li:last-child .serv {
+    border-bottom: 0;
+  }
+  .serv__nombre {
+    font-size: var(--t-2);
+    font-weight: 500;
+    color: var(--vino);
+  }
+  .serv__res {
+    grid-column: 1;
+    color: var(--suave);
+    font-size: 1rem;
+  }
+  .serv__precio {
+    grid-column: 2;
+    grid-row: 1;
+    white-space: nowrap;
+    color: var(--cobre);
+    font-weight: 500;
+    align-self: baseline;
+  }
+  .serv:hover .serv__nombre {
+    text-decoration: underline;
+    text-decoration-color: var(--cobre);
+  }
+  @media (max-width: 47.99rem) {
+    .cat {
+      grid-template-columns: 1fr;
+    }
+    .serv {
+      grid-template-columns: 1fr;
+    }
+    .serv__precio {
+      grid-column: 1;
+      grid-row: auto;
+      font-size: 0.95rem;
+    }
+  }
+  .mas {
+    margin-top: 2rem;
+  }
+
+  .dos {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1.4fr);
+    gap: 2rem 4rem;
+    align-items: start;
+  }
+  .dos .intro {
+    position: sticky;
+    top: 7rem;
+  }
+  @media (max-width: 55rem) {
+    .dos {
+      grid-template-columns: 1fr;
+    }
+    .dos .intro {
+      position: static;
+    }
+  }
+  .pasos h3 {
+    margin-bottom: 0.3rem;
+  }
+  .pasos p {
+    margin: 0;
+    color: var(--suave);
+  }
+
+  .iveet {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1.2fr);
+    gap: 1.5rem 4rem;
+    align-items: start;
+  }
+  .iveet__nombre {
+    font-size: var(--t-5);
+    font-style: italic;
+    font-weight: 400;
+    line-height: 1.05;
+  }
+  .iveet__rol {
+    color: var(--salvia-texto);
+    font-weight: 500;
+  }
+  @media (max-width: 55rem) {
+    .iveet {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  .testimonios {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(16rem, 1fr));
+    gap: 2rem;
+  }
+  .testimonios blockquote {
+    margin: 0;
+    border-left: 2px solid var(--cobre);
+    padding-left: 1.25rem;
+  }
+  .testimonios footer {
+    color: var(--suave);
+    font-size: var(--t-0);
+  }
+</style>

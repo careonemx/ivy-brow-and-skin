@@ -1,0 +1,68 @@
+---
+import Ico from './Ico.astro';
+import { business, waLink } from '../data/business';
+interface Props {
+  titulo?: string;
+  texto?: string;
+  mensaje?: string;
+  ubicacion?: string;
+}
+const {
+  titulo = 'Agenda tu cita',
+  texto = 'Escríbenos por WhatsApp para resolver dudas o elige día y hora directamente en la agenda.',
+  mensaje,
+  ubicacion = 'cierre',
+} = Astro.props;
+---
+
+<section class="cierre" aria-labelledby="cierre-tit">
+  <div class="contenedor cierre__fila">
+    <div>
+      <h2 id="cierre-tit">{titulo}</h2>
+      <p>{texto}</p>
+    </div>
+    <div class="acciones">
+      <a class="btn btn--claro" href={waLink(mensaje)} target="_blank" rel="noopener" data-ubicacion={ubicacion}>
+        <Ico n="whatsapp" /> Escribir por WhatsApp
+      </a>
+      <a class="btn btn--borde-claro" href={business.agendaUrl} target="_blank" rel="noopener" data-ubicacion={ubicacion}>
+        <Ico n="agenda" /> Elegir día y hora
+      </a>
+    </div>
+  </div>
+</section>
+
+<style>
+  .cierre {
+    background: var(--vino);
+    color: var(--papel);
+    padding-block: clamp(3.5rem, 2.5rem + 4vw, 6rem);
+  }
+  .cierre__fila {
+    display: grid;
+    grid-template-columns: 1.3fr 1fr;
+    gap: 2rem 3rem;
+    align-items: end;
+  }
+  .cierre h2 {
+    color: var(--blanco);
+    font-size: var(--t-5);
+    margin-bottom: 0.3em;
+  }
+  .cierre p {
+    max-width: 32rem;
+    color: rgba(248, 241, 238, 0.85);
+    margin: 0;
+  }
+  .cierre .acciones {
+    justify-content: flex-end;
+  }
+  @media (max-width: 47.99rem) {
+    .cierre__fila {
+      grid-template-columns: 1fr;
+    }
+    .cierre .acciones {
+      justify-content: flex-start;
+    }
+  }
+</style>

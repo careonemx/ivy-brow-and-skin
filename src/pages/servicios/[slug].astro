@@ -1,0 +1,322 @@
+---
+import Base from '../../layouts/Base.astro';
+import Migas from '../../components/Migas.astro';
+import Ico from '../../components/Ico.astro';
+import Preguntas from '../../components/Preguntas.astro';
+import Cierre from '../../components/Cierre.astro';
+import { business, waLink, SITE_URL } from '../../data/business';
+import { servicios, contraindicaciones, precioTexto, type Servicio } from '../../data/servicios';
+
+export function getStaticPaths() {
+  return servicios.map((s) => ({ params: { slug: s.slug }, props: { s } }));
+}
+const { s } = Astro.props as { s: Servicio };
+
+const PIGMENTO = ['microblading', 'microshading', 'cejas-combinadas', 'delineado-permanente', 'micropigmentacion-de-labios'];
+const pigmenta = PIGMENTO.includes(s.slug);
+const mensaje = `Hola Iveet, vengo de su sitio web. Me interesa ${s.nombre.toLowerCase()} y quisiera agendar una cita.`;
+const relacionados = servicios.filter((o) => o.slug !== s.slug && o.categoria === s.categoria).concat(
+  servicios.filter((o) => o.slug !== s.slug && o.categoria !== s.categoria)
+).slice(0, 3);
+
+const url = `${SITE_URL}/servicios/${s.slug}`;
+const schema = [
+  {
+    '@context': 'https://schema.org',
+    '@type': 'Service',
+    '@id': `${url}#servicio`,
+    name: s.nombre,
+    serviceType: s.nombre,
+    description: s.resumen,
+    url,
+    provider: { '@id': `${SITE_URL}/#negocio` },
+    areaServed: { '@type': 'City', name: 'Ciudad de México' },
+    offers: {
+      '@type': 'Offer',
+      priceCurrency: 'MXN',
+      price: s.precio,
+      priceSpecification: { '@type': 'PriceSpecification', minPrice: s.precio, priceCurrency: 'MXN' },
+      url,
+    },
+  },
+  {
+    '@context': 'https://schema.org',
+    '@type': 'FAQPage',
+    mainEntity: s.faq.map((f) => ({
+      '@type': 'Question',
+      name: f.p,
+      acceptedAnswer: { '@type': 'Answer', text: f.r },
+    })),
+  },
+];
+---
+
+<Base titulo={s.seo.titulo} descripcion={s.seo.descripcion} ruta={`/servicios/${s.slug}`} schema={schema}>
+  <div class="contenedor ficha">
+    <article class="ficha__cuerpo">
+      <header class="ficha__cab">
+        <Migas items={[{ t: 'Servicios', h: '/servicios' }, { t: s.nombre, h: `/servicios/${s.slug}` }]} />
+        <p class="ficha__cat">{s.categoria}</p>
+        <h1>{s.seo.h1}</h1>
+        <p class="ficha__resumen">{s.resumen}</p>
+      </header>
+
+      <section aria-labelledby="para">
+        <h2 id="para">¿Es para ti?</h2>
+        <ul class="hojas">{s.paraQuien.map((p) => <li>{p}</li>)}</ul>
+      </section>
+
+      <section aria-labelledby="como">
+        <h2 id="como">Cómo es la cita</h2>
+        <ol class="pasos">{s.pasos.map((p) => <li><p>{p}</p></li>)}</ol>
+      </section>
+
+      {
+        s.cicatrizacion && (
+          <section aria-labelledby="cica">
+            <h2 id="cica">Cicatrización, día por día</h2>
+            <dl class="linea">
+              {s.cicatrizacion.map((c) => (
+                <div>
+                  <dt>{c.cuando}</dt>
+                  <dd>{c.que}</dd>
+                </div>
+              ))}
+            </dl>
+            <p class="nota">
+              Los cuidados completos están en <a href="/cuidados">cuidados después de tu cita</a>.
+            </p>
+          </section>
+        )
+      }
+
+      <section aria-labelledby="antes">
+        <h2 id="antes">Antes de agendar</h2>
+        <ul class="hojas">{s.antes.map((a) => <li>{a}</li>)}</ul>
+        {
+          pigmenta && (
+            <Fragment>
+              <h3>Cuándo se pospone o se consulta con tu médico</h3>
+              <ul class="hojas">{contraindicaciones.map((c) => <li>{c}</li>)}</ul>
+            </Fragment>
+          )
+        }
+      </section>
+
+      <section aria-labelledby="preg">
+        <h2 id="preg">Preguntas sobre {s.nombre.toLowerCase()}</h2>
+        <Preguntas items={s.faq} />
+      </section>
+    </article>
+
+    <aside class="ficha__lado" aria-label="Resumen del servicio">
+      <div class="resumen">
+        <dl class="resumen__datos">
+          <div><dt>Precio</dt><dd class="resumen__precio">{precioTexto(s.precio)}</dd></div>
+          <div><dt>Duración de la cita</dt><dd>{s.duracion}</dd></div>
+          <div><dt>Resultado</dt><dd>{s.dura}</dd></div>
+        </dl>
+        <p class="resumen__inc">Incluye</p>
+        <ul class="hojas">{s.incluye.map((i) => <li>{i}</li>)}</ul>
+        <div class="resumen__acc">
+          <a class="btn btn--lleno" href={waLink(mensaje)} target="_blank" rel="noopener" data-ubicacion="ficha_servicio">
+            <Ico n="whatsapp" /> Preguntar por WhatsApp
+          </a>
+          <a class="btn btn--borde" href={business.agendaUrl} target="_blank" rel="noopener" data-ubicacion="ficha_servicio">
+            <Ico n="agenda" /> Elegir día y hora
+          </a>
+        </div>
+      </div>
+    </aside>
+  </div>
+
+  <section class="seccion seccion--alt" aria-labelledby="otros">
+    <div class="contenedor">
+      <h2 id="otros">También te puede interesar</h2>
+      <ul class="otros">
+        {relacionados.map((o) => (
+          <li>
+            <a href={`/servicios/${o.slug}`}>
+              <span class="otros__n">{o.nombre}</span>
+              <span class="otros__r">{o.resumen}</span>
+            </a>
+          </li>
+        ))}
+      </ul>
+    </div>
+  </section>
+
+  <Cierre titulo={`Agenda tu cita de ${s.nombre.toLowerCase()}`} mensaje={mensaje} ubicacion="cierre_servicio" />
+</Base>
+
+<style>
+  .ficha {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 21rem;
+    gap: 2rem clamp(2rem, 4vw, 5rem);
+    padding-block: clamp(2rem, 1.5rem + 2vw, 3.5rem) var(--sec);
+  }
+  .ficha__cuerpo {
+    max-width: 42rem;
+  }
+  .ficha__cuerpo > section {
+    margin-top: clamp(2.5rem, 2rem + 2vw, 4rem);
+  }
+  .ficha__cat {
+    color: var(--salvia-texto);
+    font-weight: 500;
+    margin-bottom: 0.4rem;
+  }
+  .ficha__cab h1 {
+    font-size: var(--t-5);
+  }
+  .ficha__resumen {
+    font-size: var(--t-2);
+    line-height: 1.55;
+    color: var(--suave);
+  }
+  .ficha h2 {
+    font-size: var(--t-3);
+  }
+  .ficha h3 {
+    margin-top: 1.75rem;
+  }
+  .pasos p {
+    margin: 0;
+  }
+  .ficha__lado {
+    position: relative;
+  }
+  .resumen {
+    position: sticky;
+    top: 7rem;
+    margin-top: clamp(0rem, 4vw, 4rem);
+    padding: 1.75rem;
+    background: var(--blanco);
+    border: 1px solid var(--linea);
+    border-radius: 1.25rem;
+  }
+  .resumen__datos {
+    margin: 0 0 1.25rem;
+    display: grid;
+    gap: 0.9rem;
+  }
+  .resumen__datos dt {
+    font-size: var(--t-0);
+    color: var(--suave);
+  }
+  .resumen__datos dd {
+    margin: 0;
+    font-weight: 500;
+  }
+  .resumen__precio {
+    font-family: var(--display);
+    font-size: 1.9rem;
+    font-weight: 500;
+    color: var(--vino);
+    line-height: 1.1;
+  }
+  .resumen__inc {
+    font-size: var(--t-0);
+    color: var(--suave);
+    margin-bottom: 0.4rem;
+  }
+  .resumen .hojas {
+    font-size: 1rem;
+  }
+  .resumen__acc {
+    display: grid;
+    gap: 0.6rem;
+    margin-top: 1.25rem;
+  }
+  @media (max-width: 63.99rem) {
+    .ficha {
+      grid-template-columns: 1fr;
+    }
+    .ficha__lado {
+      order: -1;
+      grid-row: 2;
+    }
+    .ficha__cuerpo {
+      display: contents;
+    }
+    .ficha__cab {
+      grid-row: 1;
+    }
+    .ficha__cuerpo > section {
+      margin-top: 1.5rem;
+    }
+    .resumen {
+      position: static;
+      margin-top: 0;
+    }
+  }
+
+  .linea {
+    margin: 0;
+    border-left: 1px solid var(--linea-fuerte);
+    padding-left: 1.5rem;
+  }
+  .linea > div {
+    position: relative;
+    padding-bottom: 1.25rem;
+  }
+  .linea > div::before {
+    content: '';
+    position: absolute;
+    left: calc(-1.5rem - 4.5px);
+    top: 0.45em;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--cobre);
+  }
+  .linea dt {
+    font-weight: 500;
+    color: var(--vino);
+  }
+  .linea dd {
+    margin: 0.15rem 0 0;
+    color: var(--suave);
+  }
+  .nota {
+    color: var(--suave);
+  }
+
+  .otros {
+    list-style: none;
+    padding: 0;
+    margin: 1.5rem 0 0;
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 0 2rem;
+    border-top: 1px solid var(--linea-fuerte);
+  }
+  .otros a {
+    display: block;
+    padding: 1.25rem 0;
+    text-decoration: none;
+  }
+  .otros__n {
+    display: block;
+    font-family: var(--display);
+    font-size: var(--t-3);
+    color: var(--vino);
+    margin-bottom: 0.3rem;
+  }
+  .otros__r {
+    color: var(--suave);
+    font-size: 1rem;
+  }
+  .otros a:hover .otros__n {
+    font-style: italic;
+  }
+  @media (max-width: 47.99rem) {
+    .otros {
+      grid-template-columns: 1fr;
+    }
+    .otros li + li {
+      border-top: 1px solid var(--linea);
+    }
+  }
+</style>

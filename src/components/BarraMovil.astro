@@ -1,0 +1,54 @@
+---
+import Ico from './Ico.astro';
+import { business, waLink } from '../data/business';
+---
+
+<div class="barra" role="region" aria-label="Contacto rápido">
+  <a class="barra__btn barra__btn--wa" href={waLink()} target="_blank" rel="noopener" data-ubicacion="barra_movil">
+    <Ico n="whatsapp" /> WhatsApp
+  </a>
+  <a class="barra__btn barra__btn--ag" href={business.agendaUrl} target="_blank" rel="noopener" data-ubicacion="barra_movil">
+    <Ico n="agenda" /> Agendar cita
+  </a>
+</div>
+
+<style>
+  .barra {
+    display: none;
+  }
+  @media (max-width: 47.99rem) {
+    .barra {
+      position: fixed;
+      inset: auto 0 0 0;
+      z-index: 40;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0.5rem;
+      padding: 0.6rem var(--gutter) calc(0.6rem + env(safe-area-inset-bottom));
+      background: var(--papel);
+      border-top: 1px solid var(--linea);
+    }
+  }
+  .barra__btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    min-height: 3rem;
+    border-radius: 999px;
+    font-weight: 500;
+    text-decoration: none;
+    border: 1px solid var(--vino);
+  }
+  .barra__btn :global(svg) {
+    width: 1.2rem;
+    height: 1.2rem;
+  }
+  .barra__btn--wa {
+    background: var(--vino);
+    color: var(--blanco);
+  }
+  .barra__btn--ag {
+    color: var(--vino);
+  }
+</style>

@@ -1,0 +1,139 @@
+---
+import Ico from './Ico.astro';
+import { business, waLink, telLink, ubicacionCorta } from '../data/business';
+import { servicios } from '../data/servicios';
+const anio = new Date().getFullYear();
+---
+
+<footer class="pie">
+  <div class="contenedor pie__rejilla">
+    <div class="pie__marca">
+      <img src="/img/ivy-logo.webp" alt={business.nombre} width="406" height="240" loading="lazy" />
+      <p>{business.lema}.<br />{business.especialista}, {business.especialidad.toLowerCase()}.</p>
+    </div>
+
+    <div>
+      <h2 class="pie__tit">Servicios</h2>
+      <ul class="pie__lista">
+        {servicios.map((s) => <li><a href={`/servicios/${s.slug}`}>{s.nombre}</a></li>)}
+      </ul>
+    </div>
+
+    <div>
+      <h2 class="pie__tit">Contacto</h2>
+      <ul class="pie__lista pie__lista--ico">
+        <li><a href={waLink()} target="_blank" rel="noopener" data-ubicacion="pie"><Ico n="whatsapp" /> WhatsApp {business.telefonoTexto}</a></li>
+        <li><a href={telLink} data-ubicacion="pie"><Ico n="telefono" /> Llamar al {business.telefonoTexto}</a></li>
+        <li><a href={business.agendaUrl} target="_blank" rel="noopener" data-ubicacion="pie"><Ico n="agenda" /> Agendar en línea</a></li>
+        <li><a href={business.instagram} target="_blank" rel="noopener" data-ubicacion="pie"><Ico n="instagram" /> {business.instagramUsuario}</a></li>
+        {business.correo && <li><a href={`mailto:${business.correo}`}>{business.correo}</a></li>}
+      </ul>
+    </div>
+
+    <div>
+      <h2 class="pie__tit">Horario</h2>
+      <p class="pie__txt"><Ico n="reloj" /> {business.horario.texto}</p>
+      <p class="pie__txt"><Ico n="ubicacion" /> {ubicacionCorta}</p>
+      <ul class="pie__lista">
+        <li><a href="/cuidados">Cuidados después de tu cita</a></li>
+        <li><a href="/preguntas-frecuentes">Preguntas frecuentes</a></li>
+        <li><a href="/sobre-iveet">Sobre Iveet</a></li>
+      </ul>
+    </div>
+  </div>
+  <div class="contenedor pie__legal">
+    <p>© {anio} {business.nombre}</p>
+    <a href="/aviso-de-privacidad">Aviso de privacidad</a>
+  </div>
+</footer>
+
+<style>
+  .pie {
+    border-top: 1px solid var(--linea);
+    padding-top: clamp(3rem, 2rem + 3vw, 4.5rem);
+    font-size: 1rem;
+  }
+  .pie__rejilla {
+    display: grid;
+    grid-template-columns: 1.3fr 1fr 1.2fr 1.1fr;
+    gap: 2.5rem;
+  }
+  .pie__marca img {
+    width: 9.5rem;
+    margin-bottom: 1rem;
+  }
+  .pie__marca p {
+    color: var(--suave);
+    max-width: 22rem;
+  }
+  .pie__tit {
+    font-family: var(--texto);
+    font-size: 1rem;
+    font-weight: 500;
+    color: var(--salvia-texto);
+    margin-bottom: 0.75rem;
+  }
+  .pie__lista {
+    list-style: none;
+    padding: 0;
+    margin: 0 0 1rem;
+  }
+  .pie__lista a {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    min-height: 2.5rem;
+    color: var(--tinta);
+    text-decoration: none;
+  }
+  .pie__lista a:hover {
+    color: var(--vino);
+    text-decoration: underline;
+  }
+  .pie__lista :global(svg),
+  .pie__txt :global(svg) {
+    width: 1.1rem;
+    height: 1.1rem;
+    flex: none;
+    color: var(--cobre);
+  }
+  .pie__txt {
+    display: flex;
+    gap: 0.5rem;
+    align-items: flex-start;
+  }
+  .pie__txt :global(svg) {
+    margin-top: 0.3em;
+  }
+  .pie__legal {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    gap: 0.5rem 1.5rem;
+    margin-top: 2.5rem;
+    padding-block: 1.25rem;
+    border-top: 1px solid var(--linea);
+    font-size: var(--t-0);
+    color: var(--suave);
+  }
+  .pie__legal p {
+    margin: 0;
+  }
+  .pie__legal a {
+    color: var(--suave);
+    min-height: 2.5rem;
+    display: inline-flex;
+    align-items: center;
+  }
+  @media (max-width: 63.99rem) {
+    .pie__rejilla {
+      grid-template-columns: 1fr 1fr;
+    }
+  }
+  @media (max-width: 35rem) {
+    .pie__rejilla {
+      grid-template-columns: 1fr;
+      gap: 2rem;
+    }
+  }
+</style>

@@ -1,0 +1,220 @@
+---
+import Ico from './Ico.astro';
+import { business } from '../data/business';
+interface Props {
+  ruta: string;
+}
+const { ruta } = Astro.props;
+const nav = [
+  { t: 'Servicios', h: '/servicios' },
+  { t: 'Cuidados', h: '/cuidados' },
+  { t: 'Preguntas', h: '/preguntas-frecuentes' },
+  { t: 'Sobre Iveet', h: '/sobre-iveet' },
+  { t: 'Contacto', h: '/contacto' },
+];
+const activo = (h: string) => ruta === h || ruta.startsWith(h + '/');
+---
+
+<header class="cab">
+  <div class="contenedor cab__fila">
+    <a href="/" class="cab__logo" aria-label={`${business.nombre}, inicio`}>
+      <img src="/img/ivy-logo.webp" alt={business.nombre} width="406" height="240" />
+    </a>
+
+    <nav class="cab__nav" aria-label="Principal">
+      <ul>
+        {nav.map((n) => (
+          <li>
+            <a href={n.h} aria-current={activo(n.h) ? 'page' : undefined}>{n.t}</a>
+          </li>
+        ))}
+      </ul>
+    </nav>
+
+    <a class="btn btn--lleno cab__cta" href={business.agendaUrl} target="_blank" rel="noopener" data-ubicacion="encabezado">
+      <Ico n="agenda" /> Agendar cita
+    </a>
+
+    <button class="cab__menu" type="button" aria-expanded="false" aria-controls="menu-movil">
+      <span class="cab__menu-txt">Menú</span>
+      <span class="cab__menu-ico" aria-hidden="true"><i></i><i></i></span>
+    </button>
+  </div>
+
+  <div class="menu" id="menu-movil" hidden>
+    <nav aria-label="Principal, móvil" class="contenedor">
+      <ul>
+        <li><a href="/">Inicio</a></li>
+        {nav.map((n) => (
+          <li>
+            <a href={n.h} aria-current={activo(n.h) ? 'page' : undefined}>{n.t}</a>
+          </li>
+        ))}
+      </ul>
+      <p class="menu__dato">
+        <a href={business.instagram} target="_blank" rel="noopener" data-ubicacion="menu">
+          <Ico n="instagram" /> {business.instagramUsuario}
+        </a>
+      </p>
+    </nav>
+  </div>
+</header>
+
+<script>
+  const b = document.querySelector<HTMLButtonElement>('.cab__menu');
+  const m = document.getElementById('menu-movil');
+  if (b && m) {
+    const cerrar = () => {
+      b.setAttribute('aria-expanded', 'false');
+      m.hidden = true;
+      document.body.classList.remove('sin-scroll');
+    };
+    b.addEventListener('click', () => {
+      const abrir = b.getAttribute('aria-expanded') !== 'true';
+      b.setAttribute('aria-expanded', String(abrir));
+      m.hidden = !abrir;
+      document.body.classList.toggle('sin-scroll', abrir);
+    });
+    document.addEventListener('keydown', (e) => e.key === 'Escape' && cerrar());
+    window.matchMedia('(min-width: 64rem)').addEventListener('change', cerrar);
+  }
+</script>
+
+<style>
+  .cab {
+    position: sticky;
+    top: 0;
+    z-index: 50;
+    background: rgba(248, 241, 238, 0.94);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    border-bottom: 1px solid var(--linea);
+  }
+  .cab__fila {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+    min-height: 4.5rem;
+  }
+  .cab__logo {
+    flex: none;
+    display: block;
+    padding-block: 0.35rem;
+  }
+  .cab__logo img {
+    height: 4.1rem;
+    width: auto;
+  }
+  .cab__nav {
+    margin-left: auto;
+  }
+  .cab__nav ul {
+    display: flex;
+    gap: 0.25rem;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+  .cab__nav a {
+    display: inline-flex;
+    align-items: center;
+    min-height: 2.75rem;
+    padding: 0 0.8rem;
+    text-decoration: none;
+    color: var(--tinta);
+    font-size: 1rem;
+  }
+  .cab__nav a:hover,
+  .cab__nav a[aria-current='page'] {
+    color: var(--vino);
+    text-decoration: underline;
+    text-decoration-color: var(--cobre);
+  }
+  .cab__cta {
+    flex: none;
+  }
+  .cab__menu {
+    display: none;
+    margin-left: auto;
+    align-items: center;
+    gap: 0.6rem;
+    min-height: 2.75rem;
+    padding: 0 0.25rem 0 0.75rem;
+    border: 0;
+    background: none;
+    color: var(--vino);
+    font: 500 1rem var(--texto);
+    cursor: pointer;
+  }
+  .cab__menu-ico {
+    display: grid;
+    gap: 6px;
+    width: 22px;
+  }
+  .cab__menu-ico i {
+    display: block;
+    height: 1.5px;
+    background: currentColor;
+    transition: transform 0.25s var(--ease);
+  }
+  .cab__menu[aria-expanded='true'] .cab__menu-ico i:first-child {
+    transform: translateY(3.75px) rotate(45deg);
+  }
+  .cab__menu[aria-expanded='true'] .cab__menu-ico i:last-child {
+    transform: translateY(-3.75px) rotate(-45deg);
+  }
+
+  .menu {
+    border-top: 1px solid var(--linea);
+    background: var(--papel);
+    height: calc(100dvh - 4.5rem);
+    overflow-y: auto;
+  }
+  .menu ul {
+    list-style: none;
+    padding: 1rem 0;
+    margin: 0;
+  }
+  .menu li a {
+    display: block;
+    padding: 0.7rem 0;
+    font-family: var(--display);
+    font-size: 2rem;
+    line-height: 1.2;
+    color: var(--vino);
+    text-decoration: none;
+  }
+  .menu li a[aria-current='page'] {
+    font-style: italic;
+  }
+  .menu__dato a {
+    display: inline-flex;
+    gap: 0.5rem;
+    align-items: center;
+    min-height: 2.75rem;
+  }
+  .menu__dato :global(svg) {
+    width: 1.3rem;
+  }
+
+  @media (max-width: 63.99rem) {
+    .cab__nav,
+    .cab__cta {
+      display: none;
+    }
+    .cab__menu {
+      display: inline-flex;
+    }
+    .cab__logo img {
+      height: 3.1rem;
+    }
+  }
+  @media (min-width: 64rem) {
+    .menu {
+      display: none;
+    }
+  }
+  :global(body.sin-scroll) {
+    overflow: hidden;
+  }
+</style>

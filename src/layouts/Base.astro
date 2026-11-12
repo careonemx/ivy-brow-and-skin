@@ -1,0 +1,157 @@
+---
+import '@fontsource-variable/bodoni-moda/opsz.css';
+import '@fontsource-variable/bodoni-moda/opsz-italic.css';
+import '@fontsource/jost/400.css';
+import '@fontsource/jost/500.css';
+import '../styles/global.css';
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+import BarraMovil from '../components/BarraMovil.astro';
+import { business, SITE_URL, provisional } from '../data/business';
+import { servicios } from '../data/servicios';
+
+interface Props {
+  titulo: string;
+  descripcion: string;
+  ruta: string;
+  noindex?: boolean;
+  schema?: Record<string, unknown> | Record<string, unknown>[];
+}
+const { titulo, descripcion, ruta, noindex = false, schema } = Astro.props;
+const canonical = `${SITE_URL}${ruta === '/' ? '/' : ruta}`;
+const og = `${SITE_URL}/og.jpg`;
+
+const d = business.direccion;
+const negocio = {
+  '@context': 'https://schema.org',
+  '@type': 'BeautySalon',
+  '@id': `${SITE_URL}/#negocio`,
+  name: business.nombre,
+  slogan: business.lema,
+  description: `Micropigmentación de cejas, ojos y labios, y tratamientos de skincare en ${d.ciudad}. Atención con cita.`,
+  url: `${SITE_URL}/`,
+  logo: `${SITE_URL}/img/ivy-logo.png`,
+  image: og,
+  telephone: business.telefonoE164,
+  ...(business.correo ? { email: business.correo } : {}),
+  priceRange: '$$',
+  currenciesAccepted: 'MXN',
+  address: {
+    '@type': 'PostalAddress',
+    ...(d.calle ? { streetAddress: d.calle } : {}),
+    ...(d.cp ? { postalCode: d.cp } : {}),
+    addressLocality: d.ciudad,
+    addressRegion: d.estado,
+    addressCountry: d.pais,
+  },
+  areaServed: { '@type': 'City', name: 'Ciudad de México' },
+  openingHoursSpecification: business.horario.schema.map((h) => ({
+    '@type': 'OpeningHoursSpecification',
+    dayOfWeek: h.dias,
+    opens: h.abre,
+    closes: h.cierra,
+  })),
+  employee: {
+    '@type': 'Person',
+    name: business.especialista,
+    jobTitle: business.especialidad,
+  },
+  sameAs: [business.instagram],
+  potentialAction: {
+    '@type': 'ReserveAction',
+    target: business.agendaUrl,
+    name: 'Agendar cita',
+  },
+  hasOfferCatalog: {
+    '@type': 'OfferCatalog',
+    name: 'Servicios',
+    itemListElement: servicios.map((s) => ({
+      '@type': 'Offer',
+      itemOffered: { '@type': 'Service', name: s.nombre, url: `${SITE_URL}/servicios/${s.slug}` },
+    })),
+  },
+};
+const schemas = [negocio, ...(schema ? [schema].flat() : [])];
+---
+
+<!doctype html>
+<html lang="es-MX">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{titulo}</title>
+    <meta name="description" content={descripcion} />
+    <link rel="canonical" href={canonical} />
+    <meta name="robots" content={noindex ? 'noindex, follow' : 'index, follow, max-image-preview:large'} />
+    {business.googleSiteVerification && <meta name="google-site-verification" content={business.googleSiteVerification} />}
+    {/* Marca de datos provisionales: la revisa `npm run publicar` y bloquea la publicación. */}
+    {provisional.length > 0 && <meta name="ivy-provisional" content={provisional.join(' | ')} />}
+    <meta name="geo.region" content="MX-CMX" />
+    <meta name="geo.placename" content="Ciudad de México" />
+
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content={business.nombre} />
+    <meta property="og:locale" content="es_MX" />
+    <meta property="og:title" content={titulo} />
+    <meta property="og:description" content={descripcion} />
+    <meta property="og:url" content={canonical} />
+    <meta property="og:image" content={og} />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content={`${business.nombre} — ${business.lema}`} />
+    <meta name="twitter:card" content="summary_large_image" />
+
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    <meta name="theme-color" content="#f8f1ee" />
+    <link rel="sitemap" href="/sitemap-index.xml" />
+
+    {schemas.map((s) => <script type="application/ld+json" set:html={JSON.stringify(s)} />)}
+
+    {
+      business.ga4 && (
+        <Fragment>
+          <script async src={`https://www.googletagmanager.com/gtag/js?id=${business.ga4}`} />
+          <script is:inline define:vars={{ id: business.ga4 }}>
+            window.dataLayer = window.dataLayer || [];
+            function gtag() {
+              dataLayer.push(arguments);
+            }
+            window.gtag = gtag;
+            gtag('js', new Date());
+            gtag('config', id);
+          </script>
+        </Fragment>
+      )
+    }
+  </head>
+  <body>
+    <a class="skip-link" href="#contenido">Saltar al contenido</a>
+    <Header ruta={ruta} />
+    <main id="contenido">
+      <slot />
+    </main>
+    <Footer />
+    <BarraMovil />
+
+    <script>
+      // Medición de clics de contacto. Solo actúa si GA4 está configurado.
+      document.addEventListener('click', (e) => {
+        const a = (e.target as HTMLElement).closest('a');
+        const g = (window as any).gtag;
+        if (!a || typeof g !== 'function') return;
+        const h = a.getAttribute('href') || '';
+        const ev = h.includes('wa.me')
+          ? 'clic_whatsapp'
+          : h.startsWith('tel:')
+            ? 'clic_llamada'
+            : h.includes('calendar.app.google')
+              ? 'clic_agendar'
+              : h.includes('instagram.com')
+                ? 'clic_instagram'
+                : '';
+        if (ev) g('event', ev, { ubicacion: a.dataset.ubicacion || 'sin_etiqueta', pagina: location.pathname });
+      });
+    </script>
+  </body>
+</html>

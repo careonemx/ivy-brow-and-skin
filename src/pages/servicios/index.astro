@@ -1,0 +1,176 @@
+---
+import Base from '../../layouts/Base.astro';
+import Migas from '../../components/Migas.astro';
+import Cierre from '../../components/Cierre.astro';
+import { SITE_URL } from '../../data/business';
+import { categorias, porCategoria, precioTexto, servicios } from '../../data/servicios';
+
+const schema = {
+  '@context': 'https://schema.org',
+  '@type': 'ItemList',
+  name: 'Servicios de Ivy Brow & Skin',
+  itemListElement: servicios.map((s, i) => ({
+    '@type': 'ListItem',
+    position: i + 1,
+    name: s.nombre,
+    url: `${SITE_URL}/servicios/${s.slug}`,
+  })),
+};
+---
+
+<Base
+  titulo="Servicios y precios en CDMX | Ivy Brow & Skin"
+  descripcion="Microblading, microshading, laminado, lifting, delineado, labios, limpieza facial y dermaplaning en CDMX. Precio, duración y qué incluye cada servicio."
+  ruta="/servicios"
+  schema={schema}
+>
+  <header class="cabecera">
+    <div class="contenedor">
+      <Migas items={[{ t: 'Servicios', h: '/servicios' }]} />
+      <h1>Servicios y precios</h1>
+      <p class="bajada">
+        Todos los servicios se hacen con cita. En los de micropigmentación, el retoque entre la cuarta y la octava
+        semana ya está incluido en el precio.
+      </p>
+    </div>
+  </header>
+
+  {
+    categorias.map((c, i) => (
+      <section class:list={['seccion bloque', { 'seccion--alt': i % 2 === 1 }]} aria-labelledby={`c-${i}`}>
+        <div class="contenedor">
+          <div class="bloque__cab">
+            <h2 id={`c-${i}`}>{c.nombre}</h2>
+            <p>{c.frase}</p>
+          </div>
+          <div class="tabla-envoltura" tabindex="0" role="region" aria-labelledby={`c-${i}`}>
+            <table class="tabla precios">
+              <thead>
+                <tr>
+                  <th scope="col">Servicio</th>
+                  <th scope="col">Duración de la cita</th>
+                  <th scope="col">Resultado</th>
+                  <th scope="col">Precio</th>
+                </tr>
+              </thead>
+              <tbody>
+                {porCategoria(c.nombre).map((s) => (
+                  <tr>
+                    <th scope="row">
+                      <a href={`/servicios/${s.slug}`}>{s.nombre}</a>
+                      <span>{s.resumen}</span>
+                    </th>
+                    <td data-et="Cita">{s.duracion}</td>
+                    <td data-et="Resultado">{s.dura}</td>
+                    <td class="precios__p">{precioTexto(s.precio)}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+    ))
+  }
+
+  <Cierre texto="¿Dudas sobre qué servicio te conviene? Mándanos una foto sin maquillaje por WhatsApp y te orientamos." />
+</Base>
+
+<style>
+  .bloque {
+    padding-block: clamp(3rem, 2rem + 3vw, 5rem);
+  }
+  .bloque__cab {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: 0.25rem 1.5rem;
+    margin-bottom: 1.5rem;
+  }
+  .bloque__cab h2 {
+    font-style: italic;
+    font-weight: 400;
+    margin: 0;
+  }
+  .bloque__cab p {
+    margin: 0;
+    color: var(--suave);
+  }
+  .precios {
+    min-width: 40rem;
+  }
+  .precios tbody th {
+    width: auto;
+    color: var(--tinta);
+    font-weight: 400;
+  }
+  .precios tbody th a {
+    display: block;
+    font-size: var(--t-2);
+    font-weight: 500;
+    text-decoration: none;
+    min-height: 2.5rem;
+    padding-top: 0.25rem;
+  }
+  .precios tbody th a:hover {
+    text-decoration: underline;
+  }
+  .precios tbody th span {
+    display: block;
+    color: var(--suave);
+    font-size: 0.95rem;
+    max-width: 26rem;
+  }
+  .precios thead th {
+    font-family: var(--texto);
+    font-size: var(--t-0);
+    color: var(--suave);
+    font-weight: 500;
+  }
+  .precios__p {
+    white-space: nowrap;
+    color: var(--cobre);
+    font-weight: 500;
+  }
+  @media (max-width: 47.99rem) {
+    .precios,
+    .precios tbody,
+    .precios tr {
+      display: block;
+      min-width: 0;
+    }
+    .precios thead {
+      display: none;
+    }
+    .precios tr {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0.25rem 1rem;
+      padding: 1rem 0;
+      border-bottom: 1px solid var(--linea);
+    }
+    .precios th,
+    .precios td {
+      border: 0;
+      padding: 0;
+    }
+    .precios tbody th {
+      grid-column: 1 / -1;
+      margin-bottom: 0.4rem;
+    }
+    .precios td {
+      font-size: 0.95rem;
+      color: var(--suave);
+    }
+    .precios__p {
+      grid-column: 1 / -1;
+      font-size: 1rem;
+    }
+    .precios td[data-et]::before {
+      content: attr(data-et);
+      display: block;
+      font-size: var(--t-0);
+      color: var(--salvia-texto);
+    }
+  }
+</style>

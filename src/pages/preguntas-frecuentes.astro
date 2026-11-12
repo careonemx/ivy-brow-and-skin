@@ -1,0 +1,93 @@
+---
+import Base from '../layouts/Base.astro';
+import Migas from '../components/Migas.astro';
+import Preguntas from '../components/Preguntas.astro';
+import Cierre from '../components/Cierre.astro';
+import { faqGeneral } from '../data/contenido';
+import { servicios } from '../data/servicios';
+
+const porServicio = servicios.map((s) => ({ s, faq: s.faq }));
+const todas = [...faqGeneral, ...servicios.flatMap((s) => s.faq)];
+const schema = {
+  '@context': 'https://schema.org',
+  '@type': 'FAQPage',
+  mainEntity: todas.map((f) => ({
+    '@type': 'Question',
+    name: f.p,
+    acceptedAnswer: { '@type': 'Answer', text: f.r },
+  })),
+};
+---
+
+<Base
+  titulo="Preguntas sobre microblading y cejas | Ivy Brow & Skin"
+  descripcion="¿Duele? ¿Cuánto dura? ¿Microblading o microshading? Respuestas claras sobre micropigmentación de cejas, ojos y labios, y tratamientos de piel en CDMX."
+  ruta="/preguntas-frecuentes"
+  schema={schema}
+>
+  <header class="cabecera">
+    <div class="contenedor">
+      <Migas items={[{ t: 'Preguntas frecuentes', h: '/preguntas-frecuentes' }]} />
+      <h1>Preguntas frecuentes</h1>
+      <p class="bajada">Si tu duda no está aquí, escríbenos por WhatsApp y te respondemos con gusto.</p>
+    </div>
+  </header>
+
+  <section class="seccion" aria-labelledby="gen">
+    <div class="contenedor dos">
+      <h2 id="gen">Antes de tu primera cita</h2>
+      <Preguntas items={faqGeneral} />
+    </div>
+  </section>
+
+  <section class="seccion seccion--alt" aria-labelledby="serv">
+    <div class="contenedor">
+      <h2 id="serv">Por servicio</h2>
+      {
+        porServicio.map(({ s, faq }) => (
+          <div class="dos grupo">
+            <h3>
+              <a href={`/servicios/${s.slug}`}>{s.nombre}</a>
+            </h3>
+            <Preguntas items={faq} />
+          </div>
+        ))
+      }
+    </div>
+  </section>
+
+  <Cierre />
+</Base>
+
+<style>
+  .dos {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 2fr);
+    gap: 1rem 3rem;
+    align-items: start;
+  }
+  .grupo {
+    padding-block: 1.5rem;
+  }
+  .grupo h3 {
+    font-family: var(--display);
+    font-size: var(--t-3);
+    font-style: italic;
+    font-weight: 400;
+    padding-top: 1rem;
+  }
+  .grupo h3 a {
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    min-height: 2.75rem;
+  }
+  .grupo h3 a:hover {
+    text-decoration: underline;
+  }
+  @media (max-width: 47.99rem) {
+    .dos {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

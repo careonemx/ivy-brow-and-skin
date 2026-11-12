@@ -1,0 +1,230 @@
+---
+import Base from '../layouts/Base.astro';
+import Migas from '../components/Migas.astro';
+import Ico from '../components/Ico.astro';
+import { business, waLink, telLink, ubicacionCorta } from '../data/business';
+import { servicios } from '../data/servicios';
+
+const schema = {
+  '@context': 'https://schema.org',
+  '@type': 'ContactPage',
+  name: `Contacto de ${business.nombre}`,
+};
+---
+
+<Base
+  titulo="Contacto y citas | Ivy Brow & Skin, CDMX"
+  descripcion={`Agenda tu cita de cejas, ojos, labios o skincare en la Ciudad de México. WhatsApp ${business.telefonoTexto}, agenda en línea e Instagram ${business.instagramUsuario}.`}
+  ruta="/contacto"
+  schema={schema}
+>
+  <header class="cabecera">
+    <div class="contenedor">
+      <Migas items={[{ t: 'Contacto', h: '/contacto' }]} />
+      <h1>Agenda tu cita</h1>
+      <p class="bajada">Elige día y hora en la agenda, o escríbenos por WhatsApp si antes quieres resolver dudas.</p>
+    </div>
+  </header>
+
+  <section class="seccion">
+    <div class="contenedor rejilla">
+      <div>
+        <h2>Tres formas de agendar</h2>
+        <ul class="vias">
+          <li>
+            <a href={business.agendaUrl} target="_blank" rel="noopener" data-ubicacion="contacto">
+              <Ico n="agenda" />
+              <span><strong>Agenda en línea</strong> Ves los horarios libres y apartas tu lugar.</span>
+            </a>
+          </li>
+          <li>
+            <a href={waLink()} target="_blank" rel="noopener" data-ubicacion="contacto">
+              <Ico n="whatsapp" />
+              <span><strong>WhatsApp {business.telefonoTexto}</strong> Para dudas, fotos de tus cejas o cambios de cita.</span>
+            </a>
+          </li>
+          <li>
+            <a href={telLink} data-ubicacion="contacto">
+              <Ico n="telefono" />
+              <span><strong>Llamar al {business.telefonoTexto}</strong> Si prefieres hablar directamente.</span>
+            </a>
+          </li>
+        </ul>
+
+        <dl class="datos">
+          <dt>Horario</dt>
+          <dd>{business.horario.texto}</dd>
+          <dt>Ubicación</dt>
+          <dd>{ubicacionCorta}. La dirección exacta se comparte al confirmar tu cita.</dd>
+          <dt>Instagram</dt>
+          <dd><a href={business.instagram} target="_blank" rel="noopener" data-ubicacion="contacto">{business.instagramUsuario}</a></dd>
+          {business.correo && <dt>Correo</dt>}
+          {business.correo && <dd><a href={`mailto:${business.correo}`}>{business.correo}</a></dd>}
+        </dl>
+      </div>
+
+      <div class="form-caja">
+        <h2>Prepara tu mensaje</h2>
+        <p class="form-nota">Llena los datos y se abrirá WhatsApp con el mensaje listo para enviar. Nada se envía hasta que tú lo mandes desde WhatsApp.</p>
+        <form id="form-wa" novalidate data-wa={business.whatsapp}>
+          <div class="campo">
+            <label for="f-nombre">Tu nombre</label>
+            <input id="f-nombre" name="nombre" type="text" autocomplete="given-name" required />
+            <p class="error" id="e-nombre" hidden>Escribe tu nombre.</p>
+          </div>
+          <div class="campo">
+            <label for="f-servicio">Servicio que te interesa</label>
+            <select id="f-servicio" name="servicio" required>
+              <option value="">Elige uno</option>
+              {servicios.map((s) => <option>{s.nombre}</option>)}
+              <option>Aún no sé, quiero orientación</option>
+            </select>
+            <p class="error" id="e-servicio" hidden>Elige un servicio.</p>
+          </div>
+          <div class="campo">
+            <label for="f-cuando">¿Cuándo te gustaría venir? <span>(opcional)</span></label>
+            <input id="f-cuando" name="cuando" type="text" placeholder="Por ejemplo: sábado por la mañana" />
+          </div>
+          <div class="campo">
+            <label for="f-msg">Algo más que debamos saber <span>(opcional)</span></label>
+            <textarea id="f-msg" name="mensaje" rows="4"></textarea>
+          </div>
+          <button class="btn btn--lleno" type="submit"><Ico n="whatsapp" /> Abrir WhatsApp con mi mensaje</button>
+        </form>
+      </div>
+    </div>
+  </section>
+</Base>
+
+<script>
+  const f = document.getElementById('form-wa') as HTMLFormElement | null;
+  if (f) {
+    const campos = [
+      ['nombre', 'e-nombre'],
+      ['servicio', 'e-servicio'],
+    ] as const;
+    f.addEventListener('submit', (e) => {
+      e.preventDefault();
+      let ok = true;
+      for (const [n, err] of campos) {
+        const el = f.elements.namedItem(n) as HTMLInputElement;
+        const vacio = !el.value.trim();
+        document.getElementById(err)!.hidden = !vacio;
+        el.setAttribute('aria-invalid', String(vacio));
+        if (vacio && ok) el.focus();
+        if (vacio) ok = false;
+      }
+      if (!ok) return;
+      const v = (n: string) => ((f.elements.namedItem(n) as HTMLInputElement).value || '').trim();
+      const lineas = [
+        `Hola Iveet, soy ${v('nombre')}. Vengo de su sitio web.`,
+        `Me interesa: ${v('servicio')}.`,
+        v('cuando') && `Me gustaría ir: ${v('cuando')}.`,
+        v('mensaje'),
+      ].filter(Boolean);
+      const url = `https://wa.me/${f.dataset.wa}?text=${encodeURIComponent(lineas.join('\n'))}`;
+      const g = (window as any).gtag;
+      if (typeof g === 'function') g('event', 'clic_whatsapp', { ubicacion: 'formulario', servicio: v('servicio') });
+      window.open(url, '_blank', 'noopener');
+    });
+  }
+</script>
+
+<style>
+  .rejilla {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    gap: 3rem 5rem;
+    align-items: start;
+  }
+  h2 {
+    font-size: var(--t-3);
+  }
+  .vias {
+    list-style: none;
+    padding: 0;
+    margin: 0 0 2.5rem;
+    border-top: 1px solid var(--linea-fuerte);
+  }
+  .vias a {
+    display: flex;
+    gap: 1rem;
+    align-items: flex-start;
+    padding: 1.1rem 0;
+    border-bottom: 1px solid var(--linea);
+    text-decoration: none;
+    color: var(--suave);
+  }
+  .vias a :global(svg) {
+    width: 1.6rem;
+    height: 1.6rem;
+    flex: none;
+    color: var(--cobre);
+  }
+  .vias strong {
+    display: block;
+    color: var(--vino);
+    font-weight: 500;
+    font-size: var(--t-2);
+  }
+  .vias a:hover strong {
+    text-decoration: underline;
+  }
+  .form-caja {
+    background: var(--blanco);
+    border: 1px solid var(--linea);
+    border-radius: 1.25rem;
+    padding: clamp(1.25rem, 1rem + 2vw, 2.25rem);
+  }
+  .form-nota {
+    color: var(--suave);
+    font-size: 1rem;
+  }
+  .campo {
+    margin-bottom: 1.1rem;
+  }
+  label {
+    display: block;
+    font-weight: 500;
+    margin-bottom: 0.35rem;
+  }
+  label span {
+    font-weight: 400;
+    color: var(--suave);
+  }
+  input,
+  select,
+  textarea {
+    width: 100%;
+    font: inherit;
+    color: var(--tinta);
+    background: var(--papel);
+    border: 1px solid var(--linea-fuerte);
+    border-radius: 0.6rem;
+    padding: 0.7rem 0.85rem;
+    min-height: 3rem;
+  }
+  input:focus,
+  select:focus,
+  textarea:focus {
+    outline: 2px solid var(--cobre);
+    outline-offset: 1px;
+  }
+  [aria-invalid='true'] {
+    border-color: #a3342f;
+  }
+  .error {
+    color: #a3342f;
+    font-size: 0.95rem;
+    margin: 0.3rem 0 0;
+  }
+  form .btn {
+    width: 100%;
+    margin-top: 0.5rem;
+  }
+  @media (max-width: 55rem) {
+    .rejilla {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

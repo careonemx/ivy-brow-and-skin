@@ -1,0 +1,60 @@
+---
+import Base from '../layouts/Base.astro';
+import { business, waLink } from '../data/business';
+const responsable = business.razonSocial || `${business.especialista}, con el nombre comercial ${business.nombre}`;
+const medio = business.correo ? `al correo ${business.correo} o por WhatsApp al ${business.telefonoTexto}` : `por WhatsApp al ${business.telefonoTexto}`;
+---
+
+<Base
+  titulo="Aviso de privacidad | Ivy Brow & Skin"
+  descripcion="Cómo Ivy Brow & Skin trata tus datos personales y cómo ejercer tus derechos de acceso, rectificación, cancelación y oposición."
+  ruta="/aviso-de-privacidad"
+  noindex
+>
+  <header class="cabecera">
+    <div class="contenedor">
+      <h1>Aviso de privacidad</h1>
+      <p class="bajada">Última actualización: {business.avisoFecha}.</p>
+    </div>
+  </header>
+  <section class="seccion">
+    <div class="contenedor lectura aviso">
+      <h2>Quién es responsable de tus datos</h2>
+      <p>{responsable}, en la Ciudad de México, es responsable del tratamiento de los datos personales que nos compartes, conforme a la Ley Federal de Protección de Datos Personales en Posesión de los Particulares.</p>
+
+      <h2>Qué datos usamos</h2>
+      <p>Nombre, teléfono, y los mensajes y fotografías que nos envíes por WhatsApp o redes sociales. Para valorar si un procedimiento es seguro para ti, también te preguntaremos sobre tu estado de salud (por ejemplo, embarazo, medicamentos o alergias). Estos son datos sensibles: solo los pedimos con tu consentimiento expreso y solo para esa valoración.</p>
+
+      <h2>Para qué los usamos</h2>
+      <ul>
+        <li>Agendar, confirmar y dar seguimiento a tu cita y a tu retoque.</li>
+        <li>Valorar si el procedimiento es adecuado para ti.</li>
+        <li>Responder tus dudas sobre los cuidados posteriores.</li>
+      </ul>
+      <p>Las fotografías de tu resultado solo se publican si nos das permiso expreso. Puedes retirarlo en cualquier momento.</p>
+
+      <h2>Con quién los compartimos</h2>
+      <p>No vendemos ni compartimos tus datos con terceros, salvo cuando una autoridad lo requiera conforme a la ley. La agenda en línea funciona con Google Calendar y la mensajería con WhatsApp; esos servicios tienen sus propios avisos de privacidad.</p>
+
+      <h2>Tus derechos</h2>
+      <p>Puedes pedir acceso, rectificación, cancelación u oposición al uso de tus datos (derechos ARCO), o revocar tu consentimiento, escribiendo {medio}. Te respondemos en un plazo máximo de 20 días hábiles.</p>
+      <p><a href={waLink('Hola, quiero ejercer mis derechos sobre mis datos personales.')} target="_blank" rel="noopener">Escribir por WhatsApp</a></p>
+
+      <h2>Este sitio</h2>
+      <p>Este sitio no tiene formularios que guarden información: el formulario de contacto solo prepara un mensaje que tú decides enviar desde WhatsApp. Si se activa la medición de visitas (Google Analytics), se usan cookies para contar visitas de forma agregada.</p>
+
+      <h2>Cambios a este aviso</h2>
+      <p>Cualquier cambio se publicará en esta misma página con su fecha de actualización.</p>
+    </div>
+  </section>
+</Base>
+
+<style>
+  .aviso h2 {
+    font-size: var(--t-3);
+    margin-top: 2.25rem;
+  }
+  .aviso h2:first-child {
+    margin-top: 0;
+  }
+</style>
